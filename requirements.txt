@@ -1,0 +1,11 @@
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langgraph
+fastapi
+uvicorn
+qdrant-client
+openai
+pydantic
+python-dotenv

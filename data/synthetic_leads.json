@@ -1,0 +1,47 @@
+[
+  {
+    "lead_id": 101,
+    "name": "Sarah Johnson",
+    "platform": "LinkedIn",
+    "post": "I've been feeling extremely burned out from work lately. Everything feels overwhelming.",
+    "location": "New York",
+    "interest": "stress management",
+    "status": "new"
+  },
+  {
+    "lead_id": 102,
+    "name": "Michael Chen",
+    "platform": "Twitter",
+    "post": "Can't sleep again. The anxiety about tomorrow's presentation is keeping me awake. Any tips?",
+    "location": "San Francisco",
+    "interest": "anxiety",
+    "status": "new"
+  },
+  {
+    "lead_id": 103,
+    "name": "Emily Williams",
+    "platform": "Reddit",
+    "post": "Just got promoted, but I feel like an impostor. I'm afraid they'll find out I don't know what I'm doing.",
+    "location": "London",
+    "interest": "career pressure",
+    "status": "new"
+  },
+  {
+    "lead_id": 104,
+    "name": "David Smith",
+    "platform": "Facebook",
+    "post": "It's been hard getting out of bed recently. Just feeling generally down and lacking motivation.",
+    "location": "Chicago",
+    "interest": "depression",
+    "status": "new"
+  },
+  {
+    "lead_id": 105,
+    "name": "Jessica Taylor",
+    "platform": "Instagram",
+    "post": "Balancing this new job with my family life is causing so much stress. I need a break.",
+    "location": "Austin",
+    "interest": "stress management",
+    "status": "new"
+  }
+]
