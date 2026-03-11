@@ -1,12 +1,18 @@
-from fastapi import APIRouter, HTTPException
+import tempfile
+import os
+from fastapi import APIRouter, HTTPException, UploadFile, File
 from pydantic import BaseModel
 from workflows.lead_workflow import get_lead_workflow
 from workflows.research_workflow import run_research_query
 from tools.dataset_loader import get_new_leads
 from typing import List, Dict, Any
 from langchain_core.messages import HumanMessage
+from rag.document_ingestion import ingest_document
 
 router = APIRouter()
+
+ALLOWED_EXTENSIONS = {".pdf", ".txt"}
+COLLECTION_NAME = "psychology_knowledge"
 
 # Global state to keep track of conversations in memory (for demo)
 # In production, this would be a database.
@@ -119,3 +125,44 @@ def ask_research_assistant(req: ResearchQuery):
         return {"query": req.query, "answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/rag/upload")
+async def upload_document(file: UploadFile = File(...)):
+    """
+    Upload a PDF or TXT document to the RAG knowledge base.
+    The file is chunked, embedded, and stored in the vector store (Qdrant).
+    """
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Allowed file types: {', '.join(ALLOWED_EXTENSIONS)}. Got: {ext or 'no extension'}"
+        )
+
+    try:
+        contents = await file.read()
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Failed to read file: {e}")
+
+    if not contents:
+        raise HTTPException(status_code=400, detail="File is empty")
+
+    suffix = ext
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(contents)
+        tmp_path = tmp.name
+
+    try:
+        ingest_document(tmp_path, collection_name=COLLECTION_NAME)
+        return {
+            "status": "ok",
+            "message": "Document ingested successfully.",
+            "filename": file.filename,
+            "collection": COLLECTION_NAME,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)

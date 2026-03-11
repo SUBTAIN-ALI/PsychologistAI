@@ -83,15 +83,39 @@ To test the LangGraph state machine natively without hitting the HTTP endpoints,
 python test_run.py
 ```
 
-### 3. Ingesting Research Documents
-Upload documents to your vector database by utilizing the helper provided in `rag/document_ingestion.py`.
+### 3. Uploading PDFs into the RAG Knowledge Base
+
+You can add your PDF (or `.txt`) documents to the RAG index in two ways:
+
+**Option A – Via API (recommended)**  
+With the server running (`uvicorn main:app --reload`), use the upload endpoint:
+
+- **Endpoint:** `POST /api/rag/upload`
+- **Body:** `multipart/form-data` with a single file field named `file`
+- **Allowed types:** `.pdf`, `.txt`
+
+Example with **curl**:
+```bash
+curl -X POST "http://localhost:8000/api/rag/upload" \
+  -H "accept: application/json" \
+  -F "file=@/path/to/your/document.pdf"
+```
+
+You can also use the **Swagger UI** at [http://localhost:8000/docs](http://localhost:8000/docs): open `POST /api/rag/upload`, click “Try it out”, choose your file, and execute.
+
+**Option B – From Python (script or REPL)**  
+Use the ingestion helper with a local file path:
 
 ```python
 from rag.document_ingestion import ingest_document
 
-# Add a research paper to Qdrant
+# Add a research paper or text file to the vector store
 ingest_document("path/to/paper.pdf")
+# or
+ingest_document("path/to/notes.txt")
 ```
+
+Documents are chunked, embedded with your configured embedding model, and stored in the Qdrant collection `psychology_knowledge`. After uploading, query them via `POST /api/research/query`.
 
 ---
 
